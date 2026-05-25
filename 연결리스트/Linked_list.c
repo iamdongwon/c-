@@ -24,50 +24,50 @@ void printItems(Linked_list *list);
 
 
 int main(){
-    Linked_list *list;
-    list->head=NULL;
+    Linked_list list;
+    list.head=NULL;
 
     printf("1. Insertion:\n");
-	insert(list, 1, 0);
-	printItems(list); // 1 -> NULL
+	insert(&list, 1, 0);
+	printItems(&list); // 1 -> NULL
 
-	insert(list, 2, 1);
-	printItems(list); // 1 -> 2 -> NULL
+	insert(&list, 2, 1);
+	printItems(&list); // 1 -> 2 -> NULL
 
-	insert(list, 3, 1);
-	printItems(list); // 1 -> 3 -> 2 -> NULL
+	insert(&list, 3, 1);
+	printItems(&list); // 1 -> 3 -> 2 -> NULL
 
-	insert(list, 4, 1);
-	printItems(list); // 1 -> 4 -> 3 -> 2 -> NULL
+	insert(&list, 4, 1);
+	printItems(&list); // 1 -> 4 -> 3 -> 2 -> NULL
 
-	insert(list, 4, 6); // Error: index is out of range
-	insert(list, 4, -1); // Error: index is out of range
+	insert(&list, 4, 6); // Error: index is out of range
+	insert(&list, 4, -1); // Error: index is out of range
 
 	// 2. Deletion
 	printf("\n2. Deletion:\n");
-	delete(list, 0);
-	printItems(list); // 4 -> 3 -> 2 -> NULL
+	delete(&list, 0);
+	printItems(&list); // 4 -> 3 -> 2 -> NULL
 
-	delete(list, 1);
-	printItems(list); // 4 -> 2 -> NULL
+	delete(&list, 1);
+	printItems(&list); // 4 -> 2 -> NULL
 
-	delete(list, -1); // Error: index is out of range
-	delete(list, 2); // Error: index is out of range
+	delete(&list, -1); // Error: index is out of range
+	delete(&list, 2); // Error: index is out of range
 
-	deleteAll(list);
-	printItems(list); // NULL
+	deleteAll(&list);
+	printItems(&list); // NULL
 
 	// 3. Reversion
 	printf("\n3. Reversion:\n");
-	insert(list, 1, 0);
-	insert(list, 2, 1);
-	insert(list, 3, 1);
-	insert(list, 4, 1);
-	printItems(list); // 1 -> 4 -> 3 -> 2 -> NULL
-	reverse(list);
-	printItems(list); // 2 -> 3 -> 4 -> 1 -> NULL
+	insert(&list, 1, 0);
+	insert(&list, 2, 1);
+	insert(&list, 3, 1);
+	insert(&list, 4, 1);
+	printItems(&list); // 1 -> 4 -> 3 -> 2 -> NULL
+	reverse(&list);
+	printItems(&list); // 2 -> 3 -> 4 -> 1 -> NULL
 
-	removeLinkedList(list);
+	removeLinkedList(&list);
 
 
     return 0;
@@ -115,7 +115,7 @@ void insert(Linked_list*list,int data,int index){
     }
     Node*prev=getNode(list,index-1);
     if(prev==NULL){
-        printf("ERROR");
+        printf("ERROR\n");
         return;
     }
     Node*new=(Node*)malloc(sizeof(Node));
@@ -127,22 +127,24 @@ void insert(Linked_list*list,int data,int index){
 
 void delete(Linked_list *list, int index){
     if(list->head==NULL){
-        printf("ERROR");
+        printf("ERROR\n");
         return;
     }
     if(index==0){
         Node*node=list->head;
         list->head=list->head->next;
         free(node);
+        return;
     }
     Node*curr=getNode(list,index);
     Node*prev=getNode(list,index-1);
-    if(curr==NULL){
-        printf("ERROR");
+    if(curr==NULL || prev==NULL){
+        printf("ERROR\n");
         return;
     }
     prev->next=curr->next;
     free(curr);
+    return;
 }
 
 void reverse(Linked_list *list){
@@ -155,6 +157,7 @@ void reverse(Linked_list *list){
         prevNode=currNode;
         currNode=nextNode;
     }
+    list->head=prevNode;
 }
 
 
@@ -164,4 +167,5 @@ void printItems(Linked_list *list){
         printf("%d->",curr->data);
         curr=curr->next;
     }
+    printf("NULL\n");
 }
