@@ -141,6 +141,12 @@ void traverse(Node *node) {
 // Check all keys in the subtree are in the (min,max) interval
 bool isAVL(Node *root, int min, int max) {
 	// write your own code
+	if(root==NULL) return true;
+	int bf = computeBalanceFactor(root);
+    if(root->key>=max || root->key<=min || bf>1 || bf<-1) return false;
+    if(!isAVL(root->right,root->key,max)) return false; 
+    if(!isAVL(root->left,min,root->key)) return false;
+    return true;
 }
 
 // This returns the root after insertion
@@ -180,7 +186,7 @@ Node* deleteNode(int key, Node *root) {
 		}
 	}
 
-	root = updateNode(root);
+	root = updateNode(root);//삭제된 노드의 회차가 아니라면 이것을 통해 높이 밑에서부터 초기화 해온다.
 	return root;
 }
 
@@ -189,8 +195,9 @@ Node* LLRotation(Node *root) {
     Node*node=root->left;
     root->left=node->right;
     node->right=root;
-    root=node;
-    return root;
+	updateHeight(root);
+	updateHeight(node);
+    return node;
 }
 
 Node* RRRotation(Node *root) {
@@ -198,14 +205,15 @@ Node* RRRotation(Node *root) {
     Node*node=root->right;
     root->right=node->left;
     node->left=root;
-    root=node;
-    return root;
+	updateHeight(root);
+	updateHeight(node);
+    return node;
 }
 
 Node* LRRotation(Node *root) {
 	// write your own code
     root->left=RRRotation(root->left);
-    
+
     return LLRotation(root);
 }
 
@@ -218,19 +226,18 @@ Node* RLRotation(Node *root) {
 // This returns the root after update
 Node* updateNode(Node *root) {
 	// write your own code
-    uodateHeight(root);
-    if(computeBalanceFactor(root)==2 && computeBalanceFactor(root)>=0){
-        return LLRotaion(root);//자식이 2명의 손자를 데리고 있으면 LL처리한다.
+    updateHeight(root);
+    if(computeBalanceFactor(root)==2 && computeBalanceFactor(root->left)>=0){
+        return LLRotation(root);//자식이 2명의 손자를 데리고 있으면 LL처리한다.
     }
     else if(computeBalanceFactor(root)==2){
         return LRRotation(root);
     }
-    else if(computeBalanceFactor(root)==-2 && computeBalanceFactor(root)<=0){
-        return RRRotaion(root);//자식이 2명의 손자를 데리고 있으면 RR처리한다.
+    else if(computeBalanceFactor(root)==-2 && computeBalanceFactor(root->right)<=0){
+        return RRRotation(root);//자식이 2명의 손자를 데리고 있으면 RR처리한다.
     }
     else if(computeBalanceFactor(root)==-2){
         return RLRotation(root);
     }
-
-
+	return root;
 }
